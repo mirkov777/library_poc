@@ -1,112 +1,100 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow strict-local
- */
-
-import React from 'react';
-import type {Node} from 'react';
+import React, {useState} from 'react';
 import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
   StyleSheet,
   Text,
-  useColorScheme,
   View,
+  processColor
 } from 'react-native';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+import {BarChart} from 'react-native-charts-wrapper';
 
-const Section = ({children, title}): Node => {
-  const isDarkMode = useColorScheme() === 'dark';
+const initialState = {
+      legend: {
+        enabled: true,
+        textSize: 14,
+        form: 'SQUARE',
+        formSize: 14,
+        xEntrySpace: 10,
+        yEntrySpace: 5,
+        formToTextSpace: 5,
+        wordWrapEnabled: true,
+        maxSizePercent: 0.5
+      },
+      data: {
+        dataSets: [{
+          values: [{y: 100}, {y: 105}, {y: 102}, {y: 110}, {y: 114}, {y: 109}, {y: 105}, {y: 99}, {y: 95}],
+          label: 'Bar dataSet',
+          config: {
+            color: processColor('teal'),
+            barShadowColor: processColor('lightgrey'),
+            highlightAlpha: 90,
+            highlightColor: processColor('red'),
+          }
+        }],
+
+        config: {
+          barWidth: 0.7,
+        }
+      },
+      highlights: [{x: 3}, {x: 6}],
+      xAxis: {
+        valueFormatter: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
+        granularityEnabled: true,
+        granularity : 1,
+      }
+    }
+
+const BarChartScreen = () => {
+  const [state, setState] = useState(initialState);
+
+  // const handleSelect = (event) => {
+  //   let entry = event.nativeEvent
+  //   if (entry == null) {
+  //     this.setState({...state, selectedEntry: null})
+  //   } else {
+  //     this.setState({...state, selectedEntry: JSON.stringify(entry)})
+  //   }
+
+  //   console.log(event.nativeEvent)
+  // }
+
   return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-};
+      <View style={{flex: 1}}>
 
-const App: () => Node = () => {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
-  return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.js</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
+        <View style={{height:80}}>
+          <Text> selected entry</Text>
+          <Text> {state.selectedEntry}</Text>
         </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
-};
+
+        <View style={styles.container}>
+          <BarChart
+            style={styles.chart}
+            data={state.data}
+            xAxis={state.xAxis}
+            animation={{durationX: 2000}}
+            legend={state.legend}
+            gridBackgroundColor={processColor('#ffffff')}
+            visibleRange={{x: { min: 5, max: 5 }}}
+            drawBarShadow={false}
+            drawValueAboveBar={true}
+            drawHighlightArrow={true}
+            // onSelect={this.handleSelect.bind(this)}
+            highlights={state.highlights}
+            onChange={(event) => console.log(event.nativeEvent)}
+          />
+        </View>
+      </View>
+    );
+}
 
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+  container: {
+    flex: 1,
+    backgroundColor: '#F5FCFF'
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
+  chart: {
+    flex: 1
+  }
 });
 
-export default App;
+export default BarChartScreen;
